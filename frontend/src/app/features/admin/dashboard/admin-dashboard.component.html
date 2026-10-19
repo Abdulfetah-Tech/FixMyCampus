@@ -1,0 +1,121 @@
+<div class="admin-page">
+  <div class="admin-heading">
+    <div>
+      <span class="eyebrow">Facilities operations</span>
+      <h1>Issue management</h1>
+      <p>Assign incoming reports and keep campus maintenance moving.</p>
+    </div>
+    <button class="refresh-button" type="button" (click)="loadTickets()" [disabled]="loading">↻ Refresh</button>
+  </div>
+
+  <section class="stat-grid" aria-label="Ticket summary">
+    <article class="stat-card">
+      <span class="stat-label">Open tickets</span>
+      <strong>{{ summary?.openTickets ?? tickets.length }}</strong>
+      <span class="stat-note">Across campus</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">Needs attention</span>
+      <strong>{{ unresolvedCount }}</strong>
+      <span class="stat-note">Not yet resolved</span>
+    </article>
+    <article class="stat-card">
+      <span class="stat-label">New tickets</span>
+      <strong>{{ newCount }}</strong>
+      <span class="stat-note">New reports</span>
+    </article>
+    <article class="stat-card stat-alert">
+      <span class="stat-label">Overdue high urgency</span>
+      <strong>{{ highUrgencyCount }}</strong>
+      <span class="stat-note">Open high-priority issues</span>
+    </article>
+  </section>
+
+  <section class="management-panel">
+    <div class="section-heading">
+      <div>
+        <h2>Campus reports</h2>
+        <p>Review status, ownership, and next action.</p>
+      </div>
+    </div>
+
+    <div class="filters">
+      <label>
+        <span>Building</span>
+        <select [(ngModel)]="buildingFilter">
+          <option [ngValue]="null">All buildings</option>
+          <option *ngFor="let building of buildings" [ngValue]="building.id">{{ building.name }}</option>
+        </select>
+      </label>
+      <label>
+        <span>Status</span>
+        <select [(ngModel)]="statusFilter">
+          <option value="">All statuses</option>
+          <option value="New">New</option>
+          <option value="Assigned">Assigned</option>
+          <option value="InProgress">In progress</option>
+          <option value="Resolved">Resolved</option>
+        </select>
+      </label>
+      <button type="button" class="apply-button" (click)="loadTickets()" [disabled]="loading">Apply filters</button>
+      <button type="button" class="clear-button" (click)="buildingFilter = null; statusFilter = ''; loadTickets()" [disabled]="loading">Clear</button>
+    </div>
+
+    <div *ngIf="errorMessage" class="error" role="alert">
+      <span>{{ errorMessage }}</span>
+      <button type="button" (click)="loadTickets()">Retry</button>
+    </div>
+    <div *ngIf="loading" class="loading-state">Loading tickets…</div>
+
+    <div class="ticket-list" *ngIf="!loading && tickets.length">
+      <article class="ticket-card" *ngFor="let ticket of tickets">
+        <div class="ticket-main">
+          <div class="ticket-title-row">
+            <div>
+              <span class="category-label">{{ ticket.category }}</span>
+              <h3>{{ ticket.building }} <span>·</span> {{ ticket.room }}</h3>
+            </div>
+            <span class="status" [ngClass]="'status-' + ticket.status">{{ ticket.status === 'InProgress' ? 'In progress' : ticket.status }}</span>
+          </div>
+          <div class="ticket-facts">
+            <span><strong>Reported by</strong>{{ ticket.reporterName }}</span>
+            <span><strong>Urgency</strong><i [ngClass]="'urgency-' + ticket.urgency.toLowerCase()">{{ ticket.urgency }}</i></span>
+            <span><strong>Technician</strong>{{ ticket.technicianName || 'Not assigned' }}</span>
+            <span><strong>Received</strong>{{ ticket.createdAt | date:'mediumDate' }}</span>
+          </div>
+        </div>
+
+        <div class="ticket-actions">
+          <div class="action-controls" *ngIf="ticket.status === 'New'">
+            <select #techSelect [disabled]="loadingTechnicians || technicians.length === 0" aria-label="Select technician">
+              <option value="">Select technician</option>
+              <option *ngFor="let tech of technicians" [value]="tech.id">{{ tech.fullName }}</option>
+            </select>
+            <button type="button" (click)="assignTechnician(ticket.id, +techSelect.value)" [disabled]="busyTicketId !== null || !techSelect.value || loadingTechnicians">
+              {{ busyTicketId === ticket.id ? 'Assigning…' : 'Assign technician' }}
+            </button>
+          </div>
+          <div class="action-controls" *ngIf="ticket.status === 'Assigned'">
+            <button type="button" (click)="updateStatus(ticket.id, 'InProgress')" [disabled]="busyTicketId !== null">
+              {{ busyTicketId === ticket.id ? 'Updating…' : 'Start work' }}
+            </button>
+          </div>
+          <div class="action-controls" *ngIf="ticket.status === 'InProgress'">
+            <button type="button" (click)="updateStatus(ticket.id, 'Resolved')" [disabled]="busyTicketId !== null">
+              {{ busyTicketId === ticket.id ? 'Updating…' : 'Mark resolved' }}
+            </button>
+          </div>
+          <span class="resolved-label" *ngIf="ticket.status === 'Resolved'">✓ Resolved</span>
+          <a [routerLink]="['/ticket', ticket.id]">Details <span aria-hidden="true">→</span></a>
+        </div>
+      </article>
+    </div>
+
+    <div class="empty-state" *ngIf="!loading && !errorMessage && !tickets.length">
+      <h3>No reports found</h3>
+      <p>There are no tickets matching the selected filters.</p>
+    </div>
+    <p class="technician-error" *ngIf="technicianErrorMessage" role="alert">{{ technicianErrorMessage }}</p>
+    <p class="technician-error" *ngIf="!loadingTechnicians && !technicianErrorMessage && !technicians.length">No technicians are available to assign.</p>
+  </section>
+</div>

@@ -1,0 +1,62 @@
+<section class="approvals-page">
+  <header class="page-heading">
+    <div>
+      <span class="eyebrow">Account administration</span>
+      <h1>User approvals</h1>
+      <p>Review campus account requests and assign their access role.</p>
+    </div>
+    <button type="button" (click)="loadUsers()" [disabled]="loading">Refresh</button>
+  </header>
+
+  <div class="filters">
+    <label for="approval-status">Request status</label>
+    <select id="approval-status" [(ngModel)]="status" (ngModelChange)="loadUsers()">
+      <option value="Pending">Pending</option>
+      <option value="Approved">Approved</option>
+      <option value="Rejected">Rejected</option>
+    </select>
+  </div>
+  <p class="error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</p>
+  <p class="loading" *ngIf="loading">Loading account requests…</p>
+
+  <div class="user-list" *ngIf="!loading && users.length">
+    <article class="user-card" *ngFor="let user of users">
+      <div class="user-info">
+        <span class="avatar">{{ user.fullName.charAt(0) }}</span>
+        <div>
+          <h2>{{ user.fullName }}</h2>
+          <p>{{ user.email }} <span *ngIf="user.universityId">· {{ user.universityId }}</span></p>
+          <span class="request-meta">Requested {{ user.requestedRole }} · {{ user.createdAt | date:'mediumDate' }}</span>
+          <p class="rejection" *ngIf="user.rejectionReason">Reason: {{ user.rejectionReason }}</p>
+        </div>
+      </div>
+
+      <div class="review-actions" *ngIf="status === 'Pending'">
+        <label>
+          <span>Approve as</span>
+          <select [(ngModel)]="selectedRoles[user.id]" [disabled]="busyUserId === user.id">
+            <option *ngFor="let role of roles" [value]="role">{{ role }}</option>
+          </select>
+        </label>
+        <button class="approve" type="button" (click)="approve(user)" [disabled]="busyUserId === user.id">
+          {{ busyUserId === user.id ? 'Saving…' : 'Approve' }}
+        </button>
+        <label class="reject-field">
+          <span>Rejection reason</span>
+          <input [(ngModel)]="rejectionReasons[user.id]" maxlength="500" placeholder="Required if rejecting">
+        </label>
+        <button class="reject" type="button" (click)="reject(user)" [disabled]="busyUserId === user.id || !canReject(user.id)">
+          Reject
+        </button>
+      </div>
+      <div class="approved-role" *ngIf="status !== 'Pending'">
+        {{ user.approvalStatus }}<span *ngIf="user.assignedRole"> · {{ user.assignedRole }}</span>
+      </div>
+    </article>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && !errorMessage && !users.length">
+    <h2>No {{ status.toLowerCase() }} account requests</h2>
+    <p>Requests with this status will appear here.</p>
+  </div>
+</section>

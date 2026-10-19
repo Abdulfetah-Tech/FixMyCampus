@@ -1,0 +1,100 @@
+<div class="detail-page">
+  <button type="button" class="back-button" (click)="goBack()">← Back to {{ isAdmin ? 'operations' : authRoleLabel }}</button>
+
+  <div *ngIf="errorMessage && !ticket" class="error" role="alert">
+    <span>{{ errorMessage }}</span>
+    <button type="button" (click)="goBack()">Go back</button>
+  </div>
+  <div *ngIf="loading" class="loading-state">Loading ticket details…</div>
+
+  <ng-container *ngIf="ticket && !loading">
+    <header class="detail-heading">
+      <div>
+        <span class="eyebrow">Ticket #{{ ticket.id }} · {{ ticket.category }}</span>
+        <h1>{{ ticket.building }} <span>·</span> {{ ticket.room }}</h1>
+        <p>Reported {{ ticket.createdAt | date:'longDate' }}</p>
+      </div>
+      <span class="status" [ngClass]="'status-' + ticket.status">{{ ticket.status === 'InProgress' ? 'In progress' : ticket.status }}</span>
+    </header>
+
+    <div class="detail-grid">
+      <section class="detail-main">
+        <article class="detail-card issue-card">
+          <div class="card-heading">
+            <div><span class="eyebrow">Issue details</span><h2>What needs attention</h2></div>
+            <span class="urgency" [ngClass]="'urgency-' + ticket.urgency.toLowerCase()">{{ ticket.urgency }} priority</span>
+          </div>
+          <p class="issue-description">{{ ticket.description }}</p>
+          <div class="location-row">
+            <span><small>Building</small><strong>{{ ticket.building }}</strong></span>
+            <span><small>Room / area</small><strong>{{ ticket.room }}</strong></span>
+          </div>
+        </article>
+
+        <article class="detail-card history-card">
+          <div class="card-heading">
+            <div><span class="eyebrow">Audit trail</span><h2>Activity history</h2></div>
+            <span class="history-count">{{ history.length }} updates</span>
+          </div>
+          <ol class="timeline" *ngIf="history.length; else noHistory">
+            <li *ngFor="let item of history">
+              <span class="timeline-dot"></span>
+              <div class="timeline-copy">
+                <strong>{{ item.fromStatus ? (item.fromStatus === 'InProgress' ? 'In progress' : item.fromStatus) + ' → ' : '' }}{{ item.toStatus === 'InProgress' ? 'In progress' : item.toStatus }}</strong>
+                <span>{{ item.changedByName }} · {{ item.changedAt | date:'medium' }}</span>
+                <small *ngIf="item.note">{{ item.note }}</small>
+              </div>
+            </li>
+          </ol>
+          <ng-template #noHistory><p class="history-empty">No status changes have been recorded yet.</p></ng-template>
+        </article>
+      </section>
+
+      <aside class="detail-side">
+        <article class="detail-card people-card">
+          <span class="eyebrow">People</span>
+          <h2>Report ownership</h2>
+          <div class="person-row">
+            <span class="person-avatar reporter-avatar">{{ ticket.reporterName.charAt(0) }}</span>
+            <span><small>Reporter</small><strong>{{ ticket.reporterName }}</strong></span>
+          </div>
+          <div class="person-row">
+            <span class="person-avatar technician-avatar">{{ ticket.technicianName ? ticket.technicianName.charAt(0) : '—' }}</span>
+            <span><small>Assigned technician</small><strong>{{ ticket.technicianName || 'Not assigned yet' }}</strong></span>
+          </div>
+        </article>
+
+        <article class="detail-card workflow-card">
+          <span class="eyebrow">Workflow</span>
+          <h2>Next action</h2>
+          <p class="workflow-copy">Status moves forward one step at a time: New → Assigned → In progress → Resolved.</p>
+          <div class="workflow-action" *ngIf="isAdmin && ticket.status === 'New'">
+            <label for="technician-select">Assign a technician</label>
+            <select id="technician-select" [(ngModel)]="selectedTechnicianId" [disabled]="loadingTechnicians || saving">
+              <option [ngValue]="0">{{ loadingTechnicians ? 'Loading technicians…' : 'Choose a technician' }}</option>
+              <option *ngFor="let tech of technicians" [ngValue]="tech.id">{{ tech.fullName }}</option>
+            </select>
+            <button type="button" (click)="assignTechnician()" [disabled]="!selectedTechnicianId || saving || loadingTechnicians || !technicians.length">
+              {{ saving ? 'Assigning…' : 'Assign and continue' }}
+            </button>
+          </div>
+          <div class="workflow-action" *ngIf="canUpdateStatus && ticket.status === 'Assigned'">
+            <button type="button" (click)="updateStatus('InProgress')" [disabled]="saving">{{ saving ? 'Updating…' : 'Start work' }}</button>
+          </div>
+          <div class="workflow-action" *ngIf="canUpdateStatus && ticket.status === 'InProgress'">
+            <button type="button" (click)="updateStatus('Resolved')" [disabled]="saving">{{ saving ? 'Updating…' : 'Mark resolved' }}</button>
+          </div>
+          <div class="resolved-note" *ngIf="ticket.status === 'Resolved'">✓ This issue has been resolved.</div>
+          <div class="workflow-action" *ngIf="canConfirmFix">
+            <button type="button" (click)="confirmFix()" [disabled]="saving">
+              {{ saving ? 'Confirming…' : 'Confirm the fix' }}
+            </button>
+          </div>
+          <p class="reporter-note" *ngIf="ticket.confirmedFixedAt">You confirmed this fix on {{ ticket.confirmedFixedAt | date:'mediumDate' }}.</p>
+          <p class="reporter-note" *ngIf="!canUpdateStatus && ticket.status !== 'Resolved'">The facilities team will update this ticket as work progresses.</p>
+          <div *ngIf="errorMessage && ticket" class="inline-error" role="alert">{{ errorMessage }}</div>
+        </article>
+      </aside>
+    </div>
+  </ng-container>
+</div>

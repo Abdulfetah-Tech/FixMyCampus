@@ -1,0 +1,6 @@
+@FixMyCampus.Api_HostAddress = http://localhost:5211
+
+GET {{FixMyCampus.Api_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

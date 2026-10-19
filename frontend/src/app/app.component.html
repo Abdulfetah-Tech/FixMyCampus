@@ -1,0 +1,35 @@
+<div class="application">
+  <header class="topbar" *ngIf="isAuthenticated()">
+    <a class="brand" [routerLink]="getHomeRoute()" aria-label="FixMyCampus home">
+      <span class="brand-mark">FC</span>
+      <span>FixMyCampus</span>
+    </a>
+    <nav class="nav-actions" aria-label="Main navigation">
+      <ng-container *ngIf="getRole() === 'Admin'; else nonAdminNav">
+        <a routerLink="/admin" routerLinkActive="active">Operations</a>
+        <a routerLink="/admin/users" routerLinkActive="active">User approvals</a>
+      </ng-container>
+      <ng-template #nonAdminNav>
+        <ng-container *ngIf="getRole() === 'Technician'; else reporterNav">
+          <a routerLink="/technician" routerLinkActive="active">Work queue</a>
+        </ng-container>
+        <ng-template #reporterNav>
+          <a routerLink="/reporter" routerLinkActive="active">My reports</a>
+          <a class="nav-create" routerLink="/reporter/create" routerLinkActive="active">＋ Report issue</a>
+        </ng-template>
+      </ng-template>
+    </nav>
+    <div class="account-actions">
+      <span class="role-label">{{ getRole() }}</span>
+      <button type="button" class="logout-button" (click)="logout()">Sign out</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <router-outlet></router-outlet>
+  </main>
+  <footer class="app-footer" *ngIf="isAuthenticated()">
+    <span>FixMyCampus</span>
+    <span>Campus care, made accountable.</span>
+  </footer>
+</div>

@@ -1,0 +1,35 @@
+<div class="page">
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">Your activity</span>
+      <h1>My reports</h1>
+      <p>Keep track of the issues you have raised and see what happens next.</p>
+    </div>
+    <a class="primary-link" routerLink="/reporter/create">＋ New report</a>
+  </div>
+
+  <div *ngIf="errorMessage" class="error" role="alert">{{ errorMessage }}</div>
+  <div *ngIf="loading" class="loading-state">Loading your reports…</div>
+
+  <div class="ticket-list" *ngIf="!loading && tickets.length">
+    <article class="ticket-card" *ngFor="let ticket of tickets">
+      <div class="ticket-top">
+        <span class="category-label">{{ ticket.category }} · #{{ ticket.id }}</span>
+        <span class="status" [ngClass]="'status-' + ticket.status">{{ ticket.status === 'InProgress' ? 'In progress' : ticket.status }}</span>
+      </div>
+      <h2>{{ ticket.building }} <span>·</span> {{ ticket.room }}</h2>
+      <p class="ticket-description" *ngIf="ticket.description">{{ ticket.description }}</p>
+      <div class="ticket-bottom">
+        <span>{{ ticket.createdAt | date:'mediumDate' }} <span class="separator">·</span> {{ ticket.urgency }} priority</span>
+        <a [routerLink]="['/ticket', ticket.id]">View progress <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && !errorMessage && !tickets.length">
+    <div class="empty-icon">＋</div>
+    <h2>No reports yet</h2>
+    <p>When you report a campus issue, its status and activity will appear here.</p>
+    <a class="primary-link" routerLink="/reporter/create">Create your first report</a>
+  </div>
+</div>

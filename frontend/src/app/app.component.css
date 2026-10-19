@@ -1,0 +1,147 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+.application {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  min-height: 76px;
+  padding: 0 clamp(20px, 5vw, 72px);
+  display: flex;
+  align-items: center;
+  gap: 44px;
+  background: #fff;
+  border-bottom: 1px solid #e9edf2;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 11px;
+  color: #142b24;
+  text-decoration: none;
+  font-size: 1.08rem;
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+}
+
+.brand-mark {
+  width: 37px;
+  height: 37px;
+  display: grid;
+  place-items: center;
+  border-radius: 12px;
+  background: #1c6246;
+  color: #fff;
+  font-size: 0.78rem;
+  letter-spacing: -0.04em;
+}
+
+.nav-actions,
+.account-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-actions {
+  flex: 1;
+}
+
+.nav-actions a,
+.logout-button {
+  border: 0;
+  border-radius: 10px;
+  padding: 10px 13px;
+  background: transparent;
+  color: #56645d;
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.9rem;
+  font-weight: 650;
+  white-space: nowrap;
+}
+
+.nav-actions a:hover,
+.nav-actions a.active {
+  background: #eef5f0;
+  color: #1c6246;
+}
+
+.nav-actions .nav-create {
+  background: #1c6246;
+  color: #fff;
+}
+
+.nav-actions .nav-create:hover,
+.nav-actions .nav-create.active {
+  background: #154b36;
+  color: #fff;
+}
+
+.role-label {
+  color: #6f7d75;
+  font-size: 0.78rem;
+  font-weight: 700;
+}
+
+.logout-button {
+  border: 1px solid #e0e6e2;
+  cursor: pointer;
+}
+
+.logout-button:hover {
+  background: #f5f7f5;
+  color: #183b2d;
+}
+
+.app-shell {
+  width: 100%;
+  flex: 1;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px clamp(20px, 5vw, 72px);
+  color: #829087;
+  font-size: 0.78rem;
+}
+
+.app-footer span:first-child {
+  color: #526158;
+  font-weight: 750;
+}
+
+@media (max-width: 760px) {
+  .topbar {
+    padding: 14px 18px;
+    flex-wrap: wrap;
+    gap: 10px 16px;
+  }
+
+  .brand {
+    flex: 1;
+  }
+
+  .nav-actions {
+    order: 3;
+    flex-basis: 100%;
+    overflow-x: auto;
+  }
+
+  .account-actions {
+    gap: 4px;
+  }
+
+  .role-label {
+    display: none;
+  }
+}

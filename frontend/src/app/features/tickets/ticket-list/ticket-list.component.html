@@ -1,0 +1,63 @@
+<div class="page">
+  <div class="page-heading">
+    <div>
+      <span class="eyebrow">Your campus, improved</span>
+      <h1>Facilities work queue</h1>
+      <p>Review incoming campus issues and follow work through to resolution.</p>
+    </div>
+    <span class="queue-count">{{ totalCount }} reports</span>
+  </div>
+
+  <div class="filters panel">
+    <label class="filter-search">
+      <span>Building</span>
+      <select [(ngModel)]="buildingFilter">
+        <option [ngValue]="null">All buildings</option>
+        <option *ngFor="let building of buildings" [ngValue]="building.id">{{ building.name }}</option>
+      </select>
+    </label>
+    <label class="filter-search">
+      <span>Status</span>
+      <select [(ngModel)]="statusFilter">
+      <option value="">All statuses</option>
+      <option value="New">New</option>
+      <option value="Assigned">Assigned</option>
+      <option value="InProgress">In Progress</option>
+      <option value="Resolved">Resolved</option>
+      </select>
+    </label>
+    <button type="button" class="filter-button" (click)="loadTickets()" [disabled]="loading">Apply filters</button>
+    <button type="button" class="clear-button" (click)="buildingFilter = null; statusFilter = ''; loadTickets()" [disabled]="loading">Clear</button>
+  </div>
+
+  <div *ngIf="errorMessage" class="error" role="alert">
+    <span>{{ errorMessage }}</span>
+    <button type="button" (click)="loadTickets()">Retry</button>
+  </div>
+  <div *ngIf="loading" class="loading-state">Loading campus issues…</div>
+
+  <div class="ticket-list" *ngIf="!loading && tickets.length">
+    <article class="ticket-card" *ngFor="let ticket of tickets">
+      <div class="ticket-card-top">
+        <span class="category-label">{{ ticket.category }}</span>
+        <span class="status" [ngClass]="'status-' + ticket.status">{{ ticket.status === 'InProgress' ? 'In progress' : ticket.status }}</span>
+      </div>
+      <h2>{{ ticket.building }} <span>·</span> {{ ticket.room }}</h2>
+      <p class="ticket-description" *ngIf="ticket.description">{{ ticket.description }}</p>
+      <div class="ticket-card-bottom">
+        <div class="ticket-meta">
+          <span class="urgency" [ngClass]="'urgency-' + ticket.urgency.toLowerCase()">{{ ticket.urgency }} priority</span>
+          <span>{{ ticket.createdAt | date:'mediumDate' }}</span>
+        </div>
+        <a [routerLink]="['/ticket', ticket.id]">View update <span aria-hidden="true">→</span></a>
+      </div>
+    </article>
+  </div>
+
+  <div class="empty-state" *ngIf="!loading && !errorMessage && !tickets.length">
+    <div class="empty-icon">✓</div>
+    <h2>Nothing to show yet</h2>
+    <p>No campus issues match those filters. Try clearing them or report the first one.</p>
+    <a class="primary-link" routerLink="/reporter/create">Report an issue</a>
+  </div>
+</div>

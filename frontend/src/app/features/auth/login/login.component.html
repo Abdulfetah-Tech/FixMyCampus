@@ -1,0 +1,64 @@
+<div class="login-page">
+  <section class="login-story">
+    <a class="story-brand" routerLink="/login"><span class="story-mark">FC</span> FixMyCampus</a>
+    <div class="story-copy">
+      <span class="eyebrow">A better campus starts here</span>
+      <h1>See a problem?<br><em>Get it fixed.</em></h1>
+      <p>Report campus issues, follow every update, and help make shared spaces work better for everyone.</p>
+      <div class="story-points">
+        <div><span class="point-number">01</span><span>Report with a location and details</span></div>
+        <div><span class="point-number">02</span><span>Track progress from assignment to resolution</span></div>
+        <div><span class="point-number">03</span><span>See a clear history of every action</span></div>
+      </div>
+    </div>
+    <span class="story-footnote">Campus care, made accountable.</span>
+  </section>
+
+  <section class="login-form-side">
+    <div class="auth-card">
+      <span class="eyebrow">Welcome back</span>
+      <h2>Sign in to your account</h2>
+      <p class="subtitle">Use your campus account to continue.</p>
+
+      <form [formGroup]="loginForm" (ngSubmit)="submit()">
+        <div class="field">
+          <label for="login-email">Email address</label>
+          <input id="login-email" formControlName="email" type="email" autocomplete="username" placeholder="you@campus.edu" />
+          <small *ngIf="loginForm.get('email')?.touched && loginForm.get('email')?.invalid">Enter a valid email address.</small>
+        </div>
+
+        <div class="field">
+          <label for="login-password">Password</label>
+          <input id="login-password" formControlName="password" type="password" autocomplete="current-password" placeholder="Your password" />
+          <small *ngIf="loginForm.get('password')?.touched && loginForm.get('password')?.invalid">Password must be at least 6 characters.</small>
+        </div>
+
+        <div class="error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</div>
+        <button class="submit-button" type="submit" [disabled]="loginForm.invalid || submitting">
+          {{ submitting ? 'Signing in…' : 'Sign in' }}
+        </button>
+      </form>
+
+      <div class="demo-box">
+        <div class="demo-heading"><span>DEMO ACCESS</span><span>Local development</span></div>
+        <button type="button" class="demo-account" (click)="useDemoAccount('Admin')">
+          <span class="demo-avatar admin-avatar">A</span>
+          <span class="demo-details"><strong>Administrator</strong><small>Manage assignments and progress</small></span>
+          <span class="demo-arrow">↗</span>
+        </button>
+        <button type="button" class="demo-account" (click)="useDemoAccount('Reporter')">
+          <span class="demo-avatar">R</span>
+          <span class="demo-details"><strong>Campus reporter</strong><small>Report and follow campus issues</small></span>
+          <span class="demo-arrow">↗</span>
+        </button>
+        <button type="button" class="demo-account" (click)="useDemoAccount('Technician')">
+          <span class="demo-avatar">T</span>
+          <span class="demo-details"><strong>Technician</strong><small>Review and update assigned work</small></span>
+          <span class="demo-arrow">↗</span>
+        </button>
+      </div>
+      <p class="register-link">New to FixMyCampus? <a routerLink="/register">Request an account</a></p>
+    </div>
+    <p class="login-legal">By signing in, you agree to use FixMyCampus responsibly.</p>
+  </section>
+</div>

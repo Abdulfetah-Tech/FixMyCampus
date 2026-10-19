@@ -1,0 +1,44 @@
+<div class="register-page">
+  <section class="register-card">
+    <a class="story-brand" routerLink="/login"><span class="story-mark">FC</span> FixMyCampus</a>
+    <span class="eyebrow">Join your campus</span>
+    <h1>Request an account</h1>
+    <p class="register-intro">Account requests are reviewed by a campus administrator before access is enabled.</p>
+
+    <div class="success" role="status" *ngIf="successMessage">{{ successMessage }}</div>
+    <div class="error" role="alert" *ngIf="errorMessage">{{ errorMessage }}</div>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <label class="field">
+        <span>Full name</span>
+        <input formControlName="fullName" autocomplete="name" maxlength="100">
+        <small *ngIf="form.get('fullName')?.touched && form.get('fullName')?.invalid">Enter your name.</small>
+      </label>
+      <label class="field">
+        <span>Campus email</span>
+        <input formControlName="email" type="email" autocomplete="email" maxlength="150">
+        <small *ngIf="form.get('email')?.touched && form.get('email')?.invalid">Enter a valid email.</small>
+      </label>
+      <label class="field">
+        <span>University ID</span>
+        <input formControlName="universityId" maxlength="30">
+      </label>
+      <label class="field">
+        <span>Account type</span>
+        <select formControlName="requestedRole">
+          <option value="Reporter">Campus reporter</option>
+          <option value="Technician">Facilities technician</option>
+        </select>
+      </label>
+      <label class="field">
+        <span>Password</span>
+        <input formControlName="password" type="password" autocomplete="new-password" maxlength="100">
+        <small *ngIf="form.get('password')?.touched && form.get('password')?.invalid">Use at least 8 characters.</small>
+      </label>
+      <button class="submit-button" type="submit" [disabled]="form.invalid || submitting">
+        {{ submitting ? 'Submitting…' : 'Submit account request' }}
+      </button>
+    </form>
+    <p class="login-link">Already have an account? <a routerLink="/login">Sign in</a></p>
+  </section>
+</div>

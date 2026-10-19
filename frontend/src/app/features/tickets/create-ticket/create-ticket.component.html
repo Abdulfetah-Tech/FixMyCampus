@@ -1,0 +1,77 @@
+<div class="page">
+  <button type="button" class="back-link" routerLink="/reporter">← Back to campus feed</button>
+  <div class="form-layout">
+    <section class="form-intro">
+      <span class="eyebrow">Help make it better</span>
+      <h1>Report a campus issue</h1>
+      <p>Give the facilities team the details they need to investigate and resolve the issue.</p>
+      <div class="submission-note">
+        <span class="note-icon">i</span>
+        <p>Your report starts as <strong>New</strong>. The team will assign it to a technician and update its status as work progresses.</p>
+      </div>
+    </section>
+
+    <form [formGroup]="ticketForm" (ngSubmit)="submit()" class="report-form">
+      <div *ngIf="buildingErrorMessage" class="error" role="alert">{{ buildingErrorMessage }}</div>
+      <div *ngIf="errorMessage" class="error" role="alert">{{ errorMessage }}</div>
+      <div *ngIf="successMessage" class="success" role="status">
+        <span>{{ successMessage }}</span>
+        <a *ngIf="createdTicket" [routerLink]="['/ticket', createdTicket.id]">View report #{{ createdTicket.id }} →</a>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label for="ticket-category">Issue category</label>
+          <select id="ticket-category" formControlName="category">
+            <option value="">Select a category</option>
+            <option *ngFor="let category of categories" [value]="category">{{ category }}</option>
+          </select>
+          <small *ngIf="ticketForm.get('category')?.touched && ticketForm.get('category')?.invalid">Choose an issue category.</small>
+        </div>
+        <div class="field">
+          <label for="ticket-urgency">Urgency</label>
+          <select id="ticket-urgency" formControlName="urgency">
+            <option value="">Select urgency</option>
+            <option value="Low">Low</option>
+            <option value="Medium">Medium</option>
+            <option value="High">High</option>
+          </select>
+          <small *ngIf="ticketForm.get('urgency')?.touched && ticketForm.get('urgency')?.invalid">Choose the urgency.</small>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <label for="ticket-building">Building</label>
+          <select id="ticket-building" formControlName="buildingId" [disabled]="loadingBuildings || !buildings.length">
+            <option value="">{{ loadingBuildings ? 'Loading buildings…' : 'Select a building' }}</option>
+            <option *ngFor="let building of buildings" [ngValue]="building.id">{{ building.name }}</option>
+          </select>
+          <small *ngIf="ticketForm.get('buildingId')?.touched && ticketForm.get('buildingId')?.invalid">Building is required.</small>
+        </div>
+        <div class="field">
+          <label for="ticket-room">Room or area</label>
+          <input id="ticket-room" formControlName="room" maxlength="100" placeholder="e.g. Lab 204" />
+          <small *ngIf="ticketForm.get('room')?.touched && ticketForm.get('room')?.invalid">Room or area is required.</small>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="ticket-description">Describe the issue</label>
+        <textarea id="ticket-description" formControlName="description" maxlength="1500" placeholder="What happened? Include helpful details such as when you noticed it or whether anyone is affected."></textarea>
+        <div class="description-hint">
+          <small *ngIf="ticketForm.get('description')?.touched && ticketForm.get('description')?.hasError('required')">Description is required.</small>
+          <small *ngIf="ticketForm.get('description')?.touched && ticketForm.get('description')?.hasError('minlength')">Add at least 10 characters.</small>
+          <span>{{ ticketForm.get('description')?.value?.length || 0 }}/1500</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <span>Required fields are marked with <strong>*</strong></span>
+        <button type="submit" [disabled]="ticketForm.invalid || submitting">
+          {{ submitting ? 'Submitting…' : 'Submit report' }} <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
