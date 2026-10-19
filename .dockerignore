@@ -1,0 +1,13 @@
+**/bin/
+**/obj/
+**/node_modules/
+**/.angular/
+**/dist/
+**/*.user
+**/*.suo
+.vs/
+.angular/
+.git/
+.gitignore
+README.md
+PROJECT_GUIDE.md
