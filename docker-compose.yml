@@ -1,35 +1,53 @@
 services:
   api:
+    image: ${BACKEND_IMAGE:-fixmycampus-api}:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: backend/Dockerfile
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=${DB_CONNECTION_STRING}
-      - Jwt__Issuer=FixMyCampus.Api
-      - Jwt__Audience=FixMyCampus.Angular
+      ASPNETCORE_ENVIRONMENT: Production
+      ASPNETCORE_URLS: http://+:8080
+      ConnectionStrings__DefaultConnection: Host=db;Port=5432;Database=fixmycampus;Username=postgres;Password=${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
+      Jwt__Secret: ${JWT_SECRET:?JWT_SECRET must be set}
+      Jwt__Issuer: FixMyCampus.Api
+      Jwt__Audience: FixMyCampus.Angular
+      Cors__Origins__0: http://localhost
+      AttachmentStoragePath: /app/data/attachments
+      DataProtectionKeysPath: /root/.aspnet/DataProtection-Keys
     depends_on:
-      - db
+      db:
+        condition: service_healthy
+    volumes:
+      - attachments-data:/app/data/attachments
+      - dataprotection-keys:/root/.aspnet/DataProtection-Keys
 
   frontend:
+    image: ${FRONTEND_IMAGE:-fixmycampus-frontend}:${IMAGE_TAG:-latest}
     build:
       context: .
       dockerfile: frontend/Dockerfile
     ports:
-      - "80:80"
+      - "8082:80"
+    depends_on:
+      - api
 
   db:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: postgres:16-alpine
     environment:
-      - ACCEPT_EULA=Y
-      - SA_PASSWORD=${SA_PASSWORD}
-      - MSSQL_PID=Express
-    ports:
-      - "1433:1433"
+      POSTGRES_DB: fixmycampus
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set}
     volumes:
-      - mssql-data:/var/opt/mssql
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d fixmycampus"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
 volumes:
-  mssql-data:
+  postgres-data:
+  attachments-data:
+  dataprotection-keys:

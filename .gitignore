@@ -13,8 +13,9 @@ dist/
 npm-debug.log
 yarn-error.log
 
-## Environment & Logs
-*.log
+## .env
+.env.*
+!.env.example
 **/appsettings.Development.json
 .DS_Store
 Thumbs.db

@@ -16,6 +16,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\FixMyCampus.Application\FixMyCampus.Application.csproj" />
+    <ProjectReference Include="..\FixMyCampus.Domain\FixMyCampus.Domain.csproj" />
   </ItemGroup>
 
 </Project>

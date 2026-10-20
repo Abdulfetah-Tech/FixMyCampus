@@ -9,9 +9,9 @@ public interface ITicketService
     Task<TicketDetailResponse> CreateAsync(CreateTicketRequest request, string reporterId);
     Task<PagedResult<TicketListItemResponse>> GetFeedAsync(TicketQueryParameters query);
     Task<PagedResult<TicketListItemResponse>> GetMineAsync(string reporterId, TicketQueryParameters query);
-    Task<TicketDetailResponse> GetByIdAsync(int id);
+    Task<TicketDetailResponse> GetByIdAsync(int id, string userId, string role);
     Task<TicketDetailResponse> AssignAsync(int id, AssignTicketRequest request, string adminId);
-    Task<TicketDetailResponse> ChangeStatusAsync(int id, ChangeStatusRequest request, string adminId);
+    Task<TicketDetailResponse> ChangeStatusAsync(int id, ChangeStatusRequest request, string userId, bool isAdmin);
     Task<TicketDetailResponse> ConfirmFixAsync(int id, string reporterId);
     Task<IReadOnlyList<TicketListItemResponse>> FindSimilarOpenAsync(int buildingId, string room, TicketCategory category);
 }

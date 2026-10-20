@@ -4,6 +4,7 @@ using FixMyCampus.Application.Common;
 using FixMyCampus.Infrastructure;
 using FixMyCampus.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
@@ -25,6 +26,11 @@ builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
 
 builder.Services.AddInfrastructure(builder.Configuration);
+
+builder.Services.AddDataProtection()
+    .PersistKeysToFileSystem(new DirectoryInfo(
+        builder.Configuration["DataProtectionKeysPath"] ?? "/root/.aspnet/DataProtection-Keys"))
+    .SetApplicationName("FixMyCampus.Api");
 
 // --------------------------------------------------
 // JWT configuration
@@ -144,7 +150,7 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("SeedDemoData"))
 {
     await DbSeeder.SeedAsync(app.Services);
 }
@@ -152,7 +158,6 @@ if (app.Environment.IsDevelopment())
 // --------------------------------------------------
 // HTTP pipeline
 // --------------------------------------------------
-await DbSeeder.SeedAsync(app.Services);   // was inside if (app.Environment.IsDevelopment())
 app.UseExceptionHandler(errorApp =>
 {
     errorApp.Run(async context =>
@@ -207,9 +212,8 @@ if (app.Environment.IsDevelopment())
         options.WithTitle("FixMyCampus API");
     });
 }
-if (app.Environment.IsDevelopment()) app.UseHttpsRedirection();
-// Redirect HTTP requests to HTTPS.
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment())
+    app.UseHttpsRedirection();
 
 // Serve files from wwwroot.
 app.UseStaticFiles();
@@ -227,3 +231,7 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+public partial class Program { }
+
+public partial class Program { }

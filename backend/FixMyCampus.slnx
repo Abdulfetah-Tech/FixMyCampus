@@ -3,4 +3,5 @@
   <Project Path="FixMyCampus.Application/FixMyCampus.Application.csproj" />
   <Project Path="FixMyCampus.Domain/FixMyCampus.Domain.csproj" />
   <Project Path="FixMyCampus.Infrastructure/FixMyCampus.Infrastructure.csproj" />
+  <Project Path="FixMyCampus.Api.Tests/FixMyCampus.Api.Tests.csproj" />
 </Solution>
