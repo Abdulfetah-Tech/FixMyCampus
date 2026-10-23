@@ -2,6 +2,7 @@ using System.Security.Claims;
 using System.Text;
 using FixMyCampus.Application.Common;
 using FixMyCampus.Infrastructure;
+using FixMyCampus.Infrastructure.Persistence;
 using FixMyCampus.Infrastructure.Persistence.Seed;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.DataProtection;
@@ -137,7 +138,7 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AngularClient", policy =>
     {
         policy
-            .WithOrigins("http://localhost:4200")
+            .WithOrigins("http://localhost:4200", "http://localhost:8082")
             .AllowAnyHeader()
             .AllowAnyMethod()
             .AllowCredentials();
@@ -149,6 +150,16 @@ builder.Services.AddCors(options =>
 // --------------------------------------------------
 
 var app = builder.Build();
+
+// --------------------------------------------------
+// Ensure database is migrated (Dev & Prod)
+// --------------------------------------------------
+
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    db.Database.Migrate();
+}
 
 if (app.Environment.IsDevelopment() && builder.Configuration.GetValue<bool>("SeedDemoData"))
 {
