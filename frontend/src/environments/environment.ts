@@ -1,4 +1,5 @@
+// frontend/src/environments/environment.ts
 export const environment = {
   production: false,
-  apiUrl: 'https://localhost:7020/api'
+  apiUrl: 'http://localhost:5211/api'
 };
