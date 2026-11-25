@@ -1,0 +1,18 @@
+#! api-attachments-data-persistentVolumeClaim.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: api-attachments-data
+    namespace: fixmycampus
+    labels:
+        com.docker.compose.service: api
+        com.docker.compose.volume: attachments-data
+spec:
+    accessModes:
+        # TODO would need to check which services use this volume
+        - ReadWriteOnce
+    volumeMode: Filesystem
+    resources:
+        requests:
+            storage: 100Mi

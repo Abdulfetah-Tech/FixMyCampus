@@ -1,0 +1,9 @@
+#! api-dataprotection-keys-persistentVolumeClaim.yaml
+# Generated code, do not edit
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+    name: api-dataprotection-keys
+    namespace: fixmycampus
+spec:
+    storageClassName: "hostpath" # see docker/desktop-storage-provisioner

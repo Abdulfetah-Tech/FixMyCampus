@@ -1,0 +1,63 @@
+#! api-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: api
+    namespace: fixmycampus
+    labels:
+        com.docker.compose.project: fixmycampus
+        com.docker.compose.service: api
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: fixmycampus
+            com.docker.compose.service: api
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: fixmycampus
+                com.docker.compose.service: api
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: api
+                  image: fixmycampus-api:latest
+                  imagePullPolicy: IfNotPresent
+                  env:
+                    - name: ASPNETCORE_ENVIRONMENT
+                      value: "Production"
+                    - name: ASPNETCORE_URLS
+                      value: "http://+:8080"
+                    - name: AttachmentStoragePath
+                      value: "/app/data/attachments"
+                    - name: ConnectionStrings__DefaultConnection
+                      value: "Host=db;Port=5432;Database=fixmycampus;Username=postgres;Password=postgres"
+                    - name: Cors__Origins__0
+                      value: "http://localhost"
+                    - name: DataProtectionKeysPath
+                      value: "/root/.aspnet/DataProtection-Keys"
+                    - name: Jwt__Audience
+                      value: "FixMyCampus.Angular"
+                    - name: Jwt__Issuer
+                      value: "FixMyCampus.Api"
+                    - name: Jwt__Secret
+                      value: "wasergfcnhgcbksjcbd87y3wdq0pucsnaliu0329ur;qlo2u99ufw380ysk.jcbaukgs6wf/oh"
+                  ports:
+                    - name: api-8080
+                      containerPort: 8080
+                  volumeMounts:
+                    - name: app-data-attachments
+                      mountPath: /app/data/attachments
+                    - name: root--aspnet-dataprotection-keys
+                      mountPath: /root/.aspnet/DataProtection-Keys
+            volumes:
+                - name: app-data-attachments
+                  persistentVolumeClaim:
+                    claimName: api-attachments-data
+                - name: root--aspnet-dataprotection-keys
+                  persistentVolumeClaim:
+                    claimName: api-dataprotection-keys

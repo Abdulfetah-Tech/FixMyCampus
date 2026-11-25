@@ -1,0 +1,32 @@
+#! frontend-deployment.yaml
+# Generated code, do not edit
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+    name: frontend
+    namespace: fixmycampus
+    labels:
+        com.docker.compose.project: fixmycampus
+        com.docker.compose.service: frontend
+spec:
+    replicas: 1
+    selector:
+        matchLabels:
+            com.docker.compose.project: fixmycampus
+            com.docker.compose.service: frontend
+    strategy:
+        type: Recreate
+    template:
+        metadata:
+            labels:
+                com.docker.compose.project: fixmycampus
+                com.docker.compose.service: frontend
+                com.docker.compose.network.default: "true"
+        spec:
+            containers:
+                - name: frontend
+                  image: fixmycampus-frontend:latest
+                  imagePullPolicy: IfNotPresent
+                  ports:
+                    - name: frontend-80
+                      containerPort: 80

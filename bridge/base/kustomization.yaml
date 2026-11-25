@@ -1,0 +1,18 @@
+#! kustomization.yaml
+# Generated code, do not edit
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+    - 0-fixmycampus-namespace.yaml
+    - api-attachments-data-persistentVolumeClaim.yaml
+    - api-dataprotection-keys-persistentVolumeClaim.yaml
+    - api-deployment.yaml
+    - api-expose.yaml
+    - api-service.yaml
+    - db-deployment.yaml
+    - db-expose.yaml
+    - db-postgres-data-persistentVolumeClaim.yaml
+    - default-network-policy.yaml
+    - frontend-deployment.yaml
+    - frontend-expose.yaml
+    - frontend-service.yaml
